@@ -1,0 +1,63 @@
+package com.example.myapplication;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Patterns;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText nom, email, phone, adresse, ville;
+    private Button btnEnvoyer;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        nom = findViewById(R.id.nom);
+        email = findViewById(R.id.email);
+        phone = findViewById(R.id.phone);
+        adresse = findViewById(R.id.adresse);
+        ville = findViewById(R.id.ville);
+        btnEnvoyer = findViewById(R.id.btnEnvoyer);
+
+        btnEnvoyer.setOnClickListener(v -> {
+            String sNom = nom.getText().toString().trim();
+            String sEmail = email.getText().toString().trim();
+            String sPhone = phone.getText().toString().trim();
+            String sAdresse = adresse.getText().toString().trim();
+            String sVille = ville.getText().toString().trim();
+
+            // Validation 1 : Champs vides
+            if (sNom.isEmpty() || sEmail.isEmpty() || sPhone.isEmpty()) {
+                Toast.makeText(this, "Veuillez remplir les champs obligatoires (Nom, Email, Téléphone).", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            // Validation 2 : Format de l'email
+            if (!Patterns.EMAIL_ADDRESS.matcher(sEmail).matches()) {
+                email.setError("Format d'email invalide");
+                return;
+            }
+
+            // Validation 3 : Format du téléphone (Regex pour numéros locaux : +212 ou 0 suivi de 9 chiffres)
+            String phoneRegex = "^(?:\\+212|0)[5-7]\\d{8}$";
+            if (!sPhone.matches(phoneRegex)) {
+                phone.setError("Numéro de téléphone invalide");
+                return;
+            }
+
+            Intent i = new Intent(MainActivity.this, Screen2Activity.class);
+            i.putExtra("nom", sNom);
+            i.putExtra("email", sEmail);
+            i.putExtra("phone", sPhone);
+            i.putExtra("adresse", sAdresse);
+            i.putExtra("ville", sVille);
+            startActivity(i);
+        });
+    }
+}
